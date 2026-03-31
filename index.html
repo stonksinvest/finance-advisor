@@ -9,145 +9,153 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   :root{
-    --bg:#0a0a0a;
-    --bg1:#111111;
-    --bg2:#181818;
-    --bg3:#222222;
-    --border:#2a2a2a;
-    --border2:#333;
-    --text:#e8e8e0;
-    --muted:#666;
-    --muted2:#444;
-    --accent:#00e5a0;
-    --accent-dim:#00b87d;
-    --accent-glow:rgba(0,229,160,0.12);
-    --red:#ff4d4d;
-    --green:#00e5a0;
-    --yellow:#f5c842;
-    --mono:'IBM Plex Mono',monospace;
-    --sans:'IBM Plex Sans',sans-serif;
+    --bg:#0a0a0a;--bg1:#111;--bg2:#181818;--bg3:#222;
+    --border:#2a2a2a;--border2:#333;
+    --text:#e8e8e0;--muted:#666;--muted2:#444;
+    --accent:#00e5a0;--accent-dim:#00b87d;--accent-glow:rgba(0,229,160,0.12);
+    --red:#ff4d4d;--green:#00e5a0;--yellow:#f5c842;
+    --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
   }
   html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans)}
   body{display:flex;flex-direction:column;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px)}
 
-  /* SCANLINE OVERLAY */
-  body::before{
-    content:'';position:fixed;inset:0;pointer-events:none;z-index:999;
-    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
-  }
+  /* API KEY MODAL */
+  #api-modal{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+  .modal-box{background:var(--bg1);border:1px solid var(--border2);border-radius:8px;padding:32px;width:90%;max-width:440px}
+  .modal-title{font-family:var(--mono);font-size:13px;letter-spacing:.12em;color:var(--accent);margin-bottom:6px}
+  .modal-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.7}
+  .modal-sub a{color:var(--accent);text-decoration:none}
+  .modal-sub a:hover{text-decoration:underline}
+  .modal-input{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:13px;padding:11px 14px;outline:none;margin-bottom:12px;transition:.15s}
+  .modal-input:focus{border-color:var(--accent)}
+  .modal-input::placeholder{color:var(--muted2)}
+  .modal-btn{width:100%;padding:12px;background:var(--accent);border:none;border-radius:6px;font-family:var(--sans);font-size:14px;font-weight:600;color:#000;cursor:pointer;transition:.15s}
+  .modal-btn:hover{background:var(--accent-dim)}
+  .modal-note{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:10px;text-align:center;line-height:1.6}
 
   /* HEADER */
-  header{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:14px 24px;border-bottom:1px solid var(--border);
-    background:var(--bg1);position:sticky;top:0;z-index:100;
-  }
+  header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--bg1);position:sticky;top:0;z-index:100}
   .logo{display:flex;align-items:center;gap:10px}
   .logo-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
   .logo-text{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.1em;color:var(--text)}
   .logo-sub{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.15em;margin-top:1px}
   .header-right{display:flex;align-items:center;gap:16px}
-  .status{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em}
+  .header-btn{background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--muted);font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;transition:.15s;letter-spacing:.08em}
+  .header-btn:hover{border-color:var(--accent);color:var(--accent)}
   .time-display{font-family:var(--mono);font-size:11px;color:var(--muted)}
 
-  /* TICKER STRIP */
+  /* FEAR & GREED */
+  #fg-banner{display:flex;align-items:center;gap:14px;padding:8px 24px;background:var(--bg1);border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;flex-wrap:wrap}
+  .fg-label{color:var(--muted2);letter-spacing:.1em;font-size:10px}
+  .fg-score{font-size:16px;font-weight:500;min-width:28px}
+  .fg-classification{font-size:10px;letter-spacing:.1em}
+  .fg-meter{flex:1;max-width:140px;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+  .fg-fill{height:100%;border-radius:2px;transition:width .8s ease}
+  .fg-updated{color:var(--muted2);font-size:10px;margin-left:auto}
+
+  /* TICKER */
   .ticker-wrap{background:var(--bg1);border-bottom:1px solid var(--border);overflow:hidden;height:34px;display:flex;align-items:center}
-  .ticker-track{display:flex;gap:0;animation:scroll-left 40s linear infinite;white-space:nowrap}
+  .ticker-track{display:flex;animation:scroll-left 44s linear infinite;white-space:nowrap}
   .ticker-track:hover{animation-play-state:paused}
   @keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-  .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 20px;border-right:1px solid var(--border);height:34px;font-family:var(--mono);font-size:11px}
+  .ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 20px;border-right:1px solid var(--border);height:34px;font-family:var(--mono);font-size:11px;cursor:pointer;transition:.15s}
+  .ticker-item:hover{background:var(--accent-glow)}
   .t-name{color:var(--muted);font-weight:500}
   .t-price{color:var(--text)}
   .t-change{font-size:10px}
   .t-change.up{color:var(--green)}
   .t-change.down{color:var(--red)}
 
-  /* MAIN LAYOUT */
-  main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 100px)}
+  /* MAIN */
+  main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 134px)}
 
   /* SIDEBAR */
-  aside{
-    width:220px;min-width:220px;background:var(--bg1);border-right:1px solid var(--border);
-    display:flex;flex-direction:column;padding:16px 0;overflow-y:auto;
-  }
+  aside{width:220px;min-width:220px;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 0;overflow-y:auto}
   .aside-section{padding:0 16px;margin-bottom:20px}
   .aside-label{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--muted2);text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
-  .chip-btn{
-    display:block;width:100%;text-align:left;padding:8px 10px;
-    background:transparent;border:1px solid var(--border);border-radius:4px;
-    color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;
-    margin-bottom:5px;transition:.15s;line-height:1.4;
-  }
+  .chip-btn{display:block;width:100%;text-align:left;padding:8px 10px;background:transparent;border:1px solid var(--border);border-radius:4px;color:var(--muted);font-family:var(--mono);font-size:10px;cursor:pointer;margin-bottom:5px;transition:.15s;line-height:1.4}
   .chip-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
-
-  .market-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
+  .market-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:.15s}
   .market-item:last-child{border-bottom:none}
-  .m-name{font-family:var(--mono);font-size:11px;color:var(--text)}
+  .market-item:hover .m-name{color:var(--accent)}
+  .m-name{font-family:var(--mono);font-size:11px;color:var(--text);transition:.15s}
   .m-val{font-family:var(--mono);font-size:11px}
   .m-val.up{color:var(--green)}
   .m-val.down{color:var(--red)}
   .m-val.neutral{color:var(--muted)}
+  .m-hint{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-bottom:8px}
 
-  /* CHAT AREA */
+  /* CHAT */
   .chat-area{flex:1;display:flex;flex-direction:column;overflow:hidden}
   .messages{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:16px;scroll-behavior:smooth}
   .messages::-webkit-scrollbar{width:4px}
-  .messages::-webkit-scrollbar-track{background:transparent}
   .messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-
   .msg{display:flex;gap:12px;animation:fadein .3s ease}
   @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
   .msg-avatar{width:28px;height:28px;border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;font-weight:500;margin-top:2px}
   .msg.ai .msg-avatar{background:var(--accent-glow);border:1px solid var(--accent);color:var(--accent)}
   .msg.user .msg-avatar{background:var(--bg3);border:1px solid var(--border2);color:var(--muted)}
-  .msg-body{flex:1}
+  .msg-body{flex:1;min-width:0}
   .msg-label{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
   .msg-text{font-size:14px;line-height:1.65;color:var(--text)}
   .msg.user .msg-text{color:#b8b8b0}
   .msg-text p{margin-bottom:.6em}
   .msg-text p:last-child{margin-bottom:0}
 
-  /* THINKING ANIMATION */
+  /* DATA CARD */
+  .data-card{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:12px 14px;margin-top:8px}
+  .data-card-title{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--accent);margin-bottom:10px;text-transform:uppercase}
+  .data-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-family:var(--mono);font-size:12px}
+  .data-cell-label{color:var(--muted);font-size:10px;margin-bottom:2px}
+  .data-cell-val{color:var(--text)}
+
+  /* THINKING */
   .thinking-dots{display:inline-flex;gap:4px;align-items:center;padding:4px 0}
   .thinking-dots span{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:blink 1.2s infinite}
   .thinking-dots span:nth-child(2){animation-delay:.2s}
   .thinking-dots span:nth-child(3){animation-delay:.4s}
   @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
 
-  /* INPUT AREA */
+  /* INPUT */
   .input-area{border-top:1px solid var(--border);background:var(--bg1);padding:16px 24px}
   .input-row{display:flex;gap:10px;align-items:flex-end}
-  .input-wrap{flex:1;position:relative}
-  textarea{
-    width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;
-    color:var(--text);font-family:var(--sans);font-size:14px;padding:12px 14px;
-    resize:none;outline:none;line-height:1.5;transition:.15s;min-height:46px;max-height:160px;
-  }
+  textarea{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:var(--sans);font-size:14px;padding:12px 14px;resize:none;outline:none;line-height:1.5;transition:.15s;min-height:46px;max-height:160px}
   textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)}
   textarea::placeholder{color:var(--muted)}
-  .send-btn{
-    width:46px;height:46px;background:var(--accent);border:none;border-radius:6px;
-    cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0;
-  }
+  .send-btn{width:46px;height:46px;background:var(--accent);border:none;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
   .send-btn:hover{background:var(--accent-dim)}
   .send-btn:disabled{opacity:.4;cursor:default}
   .send-btn svg{width:18px;height:18px;fill:none;stroke:#000;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
   .input-hint{font-family:var(--mono);font-size:10px;color:var(--muted2);margin-top:8px;text-align:right}
-
-  /* DISCLAIMER */
   .disclaimer{font-family:var(--mono);font-size:9px;color:var(--muted2);text-align:center;padding:8px 24px;border-top:1px solid var(--border);letter-spacing:.05em}
 
-  /* MOBILE */
   @media(max-width:640px){
     aside{display:none}
-    main{height:calc(100vh - 110px)}
+    main{height:calc(100vh - 144px)}
     .messages{padding:16px}
     .input-area{padding:12px 16px}
+    #fg-banner{padding:8px 16px;gap:10px}
   }
 </style>
 </head>
 <body>
+
+<!-- API KEY MODAL -->
+<div id="api-modal">
+  <div class="modal-box">
+    <div class="modal-title">● FINANCE ADVISOR · SETUP</div>
+    <div class="modal-sub">
+      Enter your Anthropic API key to power the AI advisor.<br/>
+      Get one free at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br/>
+      Your key is saved in your browser only — never stored elsewhere.
+    </div>
+    <input class="modal-input" id="api-key-input" type="password" placeholder="sk-ant-api03-..." onkeydown="if(event.key==='Enter')saveKey()"/>
+    <button class="modal-btn" onclick="saveKey()">Connect &rarr;</button>
+    <div class="modal-note">Stored in localStorage · Stays on your device · Clear anytime with "Change Key"</div>
+  </div>
+</div>
 
 <header>
   <div class="logo">
@@ -158,31 +166,21 @@
     </div>
   </div>
   <div class="header-right">
-    <div class="status" id="status-dot">● ONLINE</div>
+    <button class="header-btn" onclick="resetKey()">CHANGE KEY</button>
     <div class="time-display" id="clock"></div>
   </div>
 </header>
 
+<div id="fg-banner">
+  <span class="fg-label">FEAR &amp; GREED</span>
+  <span class="fg-score" id="fg-score" style="color:var(--muted)">—</span>
+  <span class="fg-classification" id="fg-class" style="color:var(--muted2)">LOADING...</span>
+  <div class="fg-meter"><div class="fg-fill" id="fg-fill" style="width:0%;background:var(--muted2)"></div></div>
+  <span class="fg-updated" id="fg-updated"></span>
+</div>
+
 <div class="ticker-wrap">
-  <div class="ticker-track" id="ticker-track">
-    <div class="ticker-item"><span class="t-name">BTC</span><span class="t-price" id="tb-BTC">—</span><span class="t-change" id="tc-BTC">—</span></div>
-    <div class="ticker-item"><span class="t-name">ETH</span><span class="t-price" id="tb-ETH">—</span><span class="t-change" id="tc-ETH">—</span></div>
-    <div class="ticker-item"><span class="t-name">SOL</span><span class="t-price" id="tb-SOL">—</span><span class="t-change" id="tc-SOL">—</span></div>
-    <div class="ticker-item"><span class="t-name">BNB</span><span class="t-price" id="tb-BNB">—</span><span class="t-change" id="tc-BNB">—</span></div>
-    <div class="ticker-item"><span class="t-name">XRP</span><span class="t-price" id="tb-XRP">—</span><span class="t-change" id="tc-XRP">—</span></div>
-    <div class="ticker-item"><span class="t-name">DOGE</span><span class="t-price" id="tb-DOGE">—</span><span class="t-change" id="tc-DOGE">—</span></div>
-    <div class="ticker-item"><span class="t-name">AVAX</span><span class="t-price" id="tb-AVAX">—</span><span class="t-change" id="tc-AVAX">—</span></div>
-    <div class="ticker-item"><span class="t-name">ADA</span><span class="t-price" id="tb-ADA">—</span><span class="t-change" id="tc-ADA">—</span></div>
-    <!-- duplicate for seamless loop -->
-    <div class="ticker-item"><span class="t-name">BTC</span><span class="t-price" id="tb2-BTC">—</span><span class="t-change" id="tc2-BTC">—</span></div>
-    <div class="ticker-item"><span class="t-name">ETH</span><span class="t-price" id="tb2-ETH">—</span><span class="t-change" id="tc2-ETH">—</span></div>
-    <div class="ticker-item"><span class="t-name">SOL</span><span class="t-price" id="tb2-SOL">—</span><span class="t-change" id="tc2-SOL">—</span></div>
-    <div class="ticker-item"><span class="t-name">BNB</span><span class="t-price" id="tb2-BNB">—</span><span class="t-change" id="tc2-BNB">—</span></div>
-    <div class="ticker-item"><span class="t-name">XRP</span><span class="t-price" id="tb2-XRP">—</span><span class="t-change" id="tc2-XRP">—</span></div>
-    <div class="ticker-item"><span class="t-name">DOGE</span><span class="t-price" id="tb2-DOGE">—</span><span class="t-change" id="tc2-DOGE">—</span></div>
-    <div class="ticker-item"><span class="t-name">AVAX</span><span class="t-price" id="tb2-AVAX">—</span><span class="t-change" id="tc2-AVAX">—</span></div>
-    <div class="ticker-item"><span class="t-name">ADA</span><span class="t-price" id="tb2-ADA">—</span><span class="t-change" id="tc2-ADA">—</span></div>
-  </div>
+  <div class="ticker-track" id="ticker-track"></div>
 </div>
 
 <main>
@@ -200,14 +198,8 @@
     </div>
     <div class="aside-section">
       <div class="aside-label">Live prices</div>
-      <div id="sidebar-prices">
-        <div class="market-item"><span class="m-name">BTC</span><span class="m-val neutral" id="sp-BTC">—</span></div>
-        <div class="market-item"><span class="m-name">ETH</span><span class="m-val neutral" id="sp-ETH">—</span></div>
-        <div class="market-item"><span class="m-name">SOL</span><span class="m-val neutral" id="sp-SOL">—</span></div>
-        <div class="market-item"><span class="m-name">BNB</span><span class="m-val neutral" id="sp-BNB">—</span></div>
-        <div class="market-item"><span class="m-name">XRP</span><span class="m-val neutral" id="sp-XRP">—</span></div>
-        <div class="market-item"><span class="m-name">DOGE</span><span class="m-val neutral" id="sp-DOGE">—</span></div>
-      </div>
+      <div class="m-hint">Click any coin for data</div>
+      <div id="sidebar-prices"></div>
     </div>
   </aside>
 
@@ -218,20 +210,16 @@
         <div class="msg-body">
           <div class="msg-label">FINANCE ADVISOR · READY</div>
           <div class="msg-text">
-            <p>Welcome. I'm your AI financial advisor — covering crypto, stocks, budgeting, and investment strategy.</p>
-            <p>I have live crypto prices loaded as context so I can give you data-aware answers. Ask me anything.</p>
+            <p>Welcome. I'm your AI financial advisor — crypto, stocks, budgeting, and investment strategy.</p>
+            <p>Live prices and the Fear &amp; Greed Index are loaded as context. Click any coin in the sidebar for a deep data snapshot. Ask me anything.</p>
           </div>
         </div>
       </div>
     </div>
-
     <div class="input-area">
       <div class="input-row">
-        <div class="input-wrap">
-          <textarea id="chat-input" placeholder="Ask about crypto, stocks, budgeting, strategy..." rows="1"
-            onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-        </div>
-        <button class="send-btn" id="send-btn" onclick="sendMsg()" title="Send">
+        <textarea id="chat-input" placeholder="Ask about crypto, stocks, budgeting, strategy..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMsg()">
           <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
@@ -242,119 +230,235 @@
 </main>
 
 <script>
-const COIN_IDS = {
-  BTC:'bitcoin',ETH:'ethereum',SOL:'solana',BNB:'binancecoin',
-  XRP:'ripple',DOGE:'dogecoin',AVAX:'avalanche-2',ADA:'cardano'
-};
-let priceContext = '';
-let conversationHistory = [];
+const COINS=[
+  {ticker:'BTC',id:'bitcoin',color:'#F7931A'},
+  {ticker:'ETH',id:'ethereum',color:'#627EEA'},
+  {ticker:'SOL',id:'solana',color:'#9945FF'},
+  {ticker:'BNB',id:'binancecoin',color:'#F3BA2F'},
+  {ticker:'XRP',id:'ripple',color:'#346AA9'},
+  {ticker:'DOGE',id:'dogecoin',color:'#C2A633'},
+  {ticker:'AVAX',id:'avalanche-2',color:'#E84142'},
+  {ticker:'ADA',id:'cardano',color:'#0033AD'},
+];
 
-// Clock
-function updateClock(){
-  const now = new Date();
-  document.getElementById('clock').textContent =
-    now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' EST';
+let priceContext='';
+let fgContext='';
+let conversationHistory=[];
+let apiKey=localStorage.getItem('fa_api_key')||'';
+
+// KEY MANAGEMENT
+function saveKey(){
+  const k=document.getElementById('api-key-input').value.trim();
+  if(!k.startsWith('sk-ant')){alert('Doesn\'t look like a valid Anthropic key — should start with sk-ant-');return;}
+  apiKey=k;
+  localStorage.setItem('fa_api_key',k);
+  document.getElementById('api-modal').style.display='none';
 }
-setInterval(updateClock, 1000);
-updateClock();
+function resetKey(){
+  localStorage.removeItem('fa_api_key');
+  apiKey='';
+  document.getElementById('api-key-input').value='';
+  document.getElementById('api-modal').style.display='flex';
+}
+if(apiKey) document.getElementById('api-modal').style.display='none';
 
-// Prices
+// CLOCK
+function updateClock(){
+  const n=new Date();
+  document.getElementById('clock').textContent=n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})+' EST';
+}
+setInterval(updateClock,1000);updateClock();
+
+// BUILD TICKER
+function buildTicker(){
+  const track=document.getElementById('ticker-track');
+  let html='';
+  [0,1].forEach(pass=>{
+    COINS.forEach((c,i)=>{
+      const uid=`${pass}-${i}`;
+      html+=`<div class="ticker-item" onclick="showCoinData('${c.ticker}','${c.id}')">
+        <span class="t-name">${c.ticker}</span>
+        <span class="t-price" id="tp-${uid}">—</span>
+        <span class="t-change" id="tc-${uid}">—</span>
+      </div>`;
+    });
+  });
+  track.innerHTML=html;
+}
+buildTicker();
+
+// BUILD SIDEBAR
+function buildSidebar(){
+  document.getElementById('sidebar-prices').innerHTML=COINS.map(c=>`
+    <div class="market-item" onclick="showCoinData('${c.ticker}','${c.id}')">
+      <span class="m-name">${c.ticker}</span>
+      <span class="m-val neutral" id="sp-${c.ticker}">—</span>
+    </div>`).join('');
+}
+buildSidebar();
+
+// FETCH PRICES
 async function fetchPrices(){
   try{
-    const ids = Object.values(COIN_IDS).join(',');
-    const r = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
-    const d = await r.json();
-    const lines = [];
-    Object.entries(COIN_IDS).forEach(([ticker,id])=>{
-      const coin = d[id];
-      if(!coin) return;
-      const price = coin.usd;
-      const change = coin.usd_24h_change;
-      const priceStr = price >= 1 ? '$'+price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) : '$'+price.toFixed(4);
-      const changeStr = (change>=0?'+':'')+change.toFixed(2)+'%';
-      const cls = change>=0?'up':'down';
-      // Ticker strip
-      ['tb-','tb2-'].forEach(pfx=>{
-        const el = document.getElementById(pfx+ticker);
-        if(el) el.textContent = priceStr;
+    const ids=COINS.map(c=>c.id).join(',');
+    const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+    const d=await r.json();
+    const lines=[];
+    COINS.forEach((c,i)=>{
+      const coin=d[c.id];if(!coin)return;
+      const price=coin.usd;
+      const change=coin.usd_24h_change||0;
+      const priceStr=price>=1?'$'+price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}):'$'+price.toFixed(4);
+      const changeStr=(change>=0?'+':'')+change.toFixed(2)+'%';
+      const cls=change>=0?'up':'down';
+      [0,1].forEach(pass=>{
+        const uid=`${pass}-${i}`;
+        const tp=document.getElementById(`tp-${uid}`);
+        const tc=document.getElementById(`tc-${uid}`);
+        if(tp) tp.textContent=priceStr;
+        if(tc){tc.textContent=changeStr;tc.className='t-change '+cls;}
       });
-      ['tc-','tc2-'].forEach(pfx=>{
-        const el = document.getElementById(pfx+ticker);
-        if(el){el.textContent=changeStr;el.className='t-change '+cls;}
-      });
-      // Sidebar
-      const sp = document.getElementById('sp-'+ticker);
-      if(sp){sp.textContent=priceStr;sp.className='m-val '+(change>=0?'up':'down');}
-      lines.push(`${ticker}: ${priceStr} (${changeStr} 24h)`);
+      const sp=document.getElementById('sp-'+c.ticker);
+      if(sp){sp.textContent=priceStr;sp.className='m-val '+cls;}
+      lines.push(`${c.ticker}: ${priceStr} (${changeStr} 24h)`);
     });
-    priceContext = 'Current live crypto prices: '+lines.join(' | ');
+    priceContext='Live crypto prices: '+lines.join(' | ');
+  }catch(e){priceContext='Live crypto prices temporarily unavailable.';}
+}
+
+// FEAR & GREED
+async function fetchFearGreed(){
+  try{
+    const r=await fetch('https://api.alternative.me/fng/?limit=1');
+    const d=await r.json();
+    const val=parseInt(d.data[0].value);
+    const cls=d.data[0].value_classification;
+    const color=val>=75?'#ff4d4d':val>=55?'#f5c842':val>=45?'#888':val>=25?'#63b3ff':'#a78bfa';
+    document.getElementById('fg-score').textContent=val;
+    document.getElementById('fg-score').style.color=color;
+    document.getElementById('fg-class').textContent=cls.toUpperCase();
+    document.getElementById('fg-class').style.color=color;
+    document.getElementById('fg-fill').style.width=val+'%';
+    document.getElementById('fg-fill').style.background=color;
+    document.getElementById('fg-updated').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    fgContext=`Fear & Greed Index: ${val}/100 (${cls}). ${val>=65?'Markets greedy — historically signals elevated risk.':val<=35?'Markets fearful — historically a potential buying opportunity.':'Market sentiment neutral.'}`;
+  }catch(e){}
+}
+
+// COIN DATA ON CLICK
+async function showCoinData(ticker,coinId){
+  const msgDiv=appendMsg('ai','<div class="thinking-dots"><span></span><span></span><span></span></div>');
+  msgDiv.querySelector('.msg-label').textContent=`${ticker} · LOADING DATA`;
+  try{
+    const r=await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+    const nd=await r.json();
+    const p=nd.market_data;
+    const fmt=(n,dec=2)=>n>=1?'$'+n.toLocaleString(undefined,{minimumFractionDigits:dec,maximumFractionDigits:dec}):'$'+n.toFixed(4);
+    const pct=(n)=>`<span style="color:${n>=0?'var(--green)':'var(--red)'}">${n>=0?'+':''}${n.toFixed(2)}%</span>`;
+    const priceStr=fmt(p.current_price.usd);
+    const cap='$'+(p.market_cap.usd/1e9).toFixed(1)+'B';
+    const vol='$'+(p.total_volume.usd/1e9).toFixed(2)+'B';
+    const ath=fmt(p.ath.usd);
+    const athPct=p.ath_change_percentage.usd.toFixed(1);
+    const h24=p.price_change_percentage_24h||0;
+    const d7=p.price_change_percentage_7d||0;
+    const d30=p.price_change_percentage_30d||0;
+    msgDiv.querySelector('.msg-label').textContent=`${ticker} · LIVE SNAPSHOT`;
+    msgDiv.querySelector('.msg-text').innerHTML=`
+      <div class="data-card">
+        <div class="data-card-title">${nd.name} (${ticker})</div>
+        <div class="data-grid">
+          <div><div class="data-cell-label">PRICE</div><div class="data-cell-val">${priceStr}</div></div>
+          <div><div class="data-cell-label">MKT CAP</div><div class="data-cell-val">${cap}</div></div>
+          <div><div class="data-cell-label">24H VOL</div><div class="data-cell-val">${vol}</div></div>
+          <div><div class="data-cell-label">ATH</div><div class="data-cell-val">${ath}</div></div>
+          <div><div class="data-cell-label">24H CHG</div><div class="data-cell-val">${pct(h24)}</div></div>
+          <div><div class="data-cell-label">7D CHG</div><div class="data-cell-val">${pct(d7)}</div></div>
+          <div><div class="data-cell-label">30D CHG</div><div class="data-cell-val">${pct(d30)}</div></div>
+          <div><div class="data-cell-label">FROM ATH</div><div class="data-cell-val" style="color:var(--red)">${athPct}%</div></div>
+        </div>
+      </div>
+      <p style="margin-top:10px;font-size:13px;color:var(--muted)">Click the input to ask me about ${ticker} — or I'll pre-fill an analysis for you.</p>`;
+    document.getElementById('chat-input').value=`Analyze ${ticker} at its current price. Is it a good entry right now given the Fear & Greed index and recent performance?`;
+    autoResize(document.getElementById('chat-input'));
+    document.getElementById('messages').scrollTop=99999;
   }catch(e){
-    priceContext = 'Live crypto prices unavailable at this moment.';
+    msgDiv.querySelector('.msg-text').innerHTML=`<p>Couldn't load ${ticker} data right now. Try asking me about it directly.</p>`;
   }
 }
-fetchPrices();
-setInterval(fetchPrices, 60000);
 
-// Chat
-function autoResize(el){
-  el.style.height='auto';
-  el.style.height=Math.min(el.scrollHeight,160)+'px';
-}
-function handleKey(e){
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
-}
-function quickAsk(btn){
-  document.getElementById('chat-input').value=btn.textContent;
-  sendMsg();
-}
-function appendMsg(role, html){
-  const msgs = document.getElementById('messages');
-  const div = document.createElement('div');
+// CHAT HELPERS
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,160)+'px';}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function quickAsk(btn){document.getElementById('chat-input').value=btn.textContent;sendMsg();}
+
+function appendMsg(role,html){
+  const msgs=document.getElementById('messages');
+  const div=document.createElement('div');
   div.className='msg '+role;
-  const label = role==='ai'?'FINANCE ADVISOR':'YOU';
+  const label=role==='ai'?'FINANCE ADVISOR':'YOU';
   div.innerHTML=`<div class="msg-avatar">${role==='ai'?'AI':'▸'}</div><div class="msg-body"><div class="msg-label">${label}</div><div class="msg-text">${html}</div></div>`;
   msgs.appendChild(div);
   msgs.scrollTop=msgs.scrollHeight;
   return div;
 }
 
+// SEND MESSAGE
 async function sendMsg(){
-  const inp = document.getElementById('chat-input');
-  const userMsg = inp.value.trim();
-  if(!userMsg) return;
-  inp.value='';
-  inp.style.height='auto';
+  if(!apiKey){document.getElementById('api-modal').style.display='flex';return;}
+  const inp=document.getElementById('chat-input');
+  const userMsg=inp.value.trim();
+  if(!userMsg)return;
+  inp.value='';inp.style.height='auto';
   document.getElementById('send-btn').disabled=true;
-
-  appendMsg('user','<p>'+userMsg.replace(/\n/g,'<br>')+'</p>');
+  appendMsg('user','<p>'+userMsg.replace(/</g,'&lt;').replace(/\n/g,'<br>')+'</p>');
   conversationHistory.push({role:'user',content:userMsg});
+  const thinkDiv=appendMsg('ai','<div class="thinking-dots"><span></span><span></span><span></span></div>');
 
-  const thinkDiv = appendMsg('ai','<div class="thinking-dots"><span></span><span></span><span></span></div>');
+  // Auto-detect coin mention and fetch live data for context
+  const mentioned=COINS.find(c=>userMsg.toUpperCase().includes(c.ticker));
+  let coinCtx='';
+  if(mentioned){
+    try{
+      const nr=await fetch(`https://api.coingecko.com/api/v3/coins/${mentioned.id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`);
+      const nd=await nr.json();
+      const p=nd.market_data;
+      coinCtx=`\n\nLive ${mentioned.ticker} data: Price $${p.current_price.usd.toLocaleString()}, 24h: ${(p.price_change_percentage_24h||0).toFixed(2)}%, 7d: ${(p.price_change_percentage_7d||0).toFixed(2)}%, 30d: ${(p.price_change_percentage_30d||0).toFixed(2)}%, Market cap: $${(p.market_cap.usd/1e9).toFixed(1)}B, 24h vol: $${(p.total_volume.usd/1e9).toFixed(2)}B, ATH: $${p.ath.usd.toLocaleString()}, currently ${(p.ath_change_percentage.usd||0).toFixed(1)}% below ATH.`;
+    }catch(e){}
+  }
 
   try{
-    const systemPrompt = `You are a sharp, no-nonsense AI financial advisor. You cover crypto, stocks, ETFs, budgeting, and personal finance strategy. Be direct, practical, and data-aware. Keep responses concise but substantive — 2-4 short paragraphs max. Use plain text only (no markdown symbols). When relevant, reference the live crypto prices provided. Always end with a one-line risk reminder if giving specific asset advice.\n\n${priceContext}`;
-
-    const r = await fetch('https://api.anthropic.com/v1/messages',{
+    const system=`You are a sharp, direct AI financial advisor. You cover crypto, stocks, ETFs, budgeting, and personal finance. Be concise but substantive — 2 to 4 short paragraphs, plain text only, no markdown symbols or bullet dashes. Reference live data when relevant. End with a brief risk reminder when giving specific asset advice.\n\n${priceContext}\n${fgContext}${coinCtx}`;
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system:systemPrompt,
-        messages:conversationHistory
-      })
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system,messages:conversationHistory})
     });
-    const data = await r.json();
-    const reply = data.content?.map(b=>b.text||'').join('').trim()||'Error getting response.';
-    conversationHistory.push({role:'assistant',content:reply});
-    const formatted = reply.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('');
-    thinkDiv.querySelector('.msg-text').innerHTML=formatted;
+    const data=await r.json();
+    if(data.error){
+      thinkDiv.querySelector('.msg-text').innerHTML=`<p>API error: ${data.error.message}. Check your key at console.anthropic.com.</p>`;
+    }else{
+      const reply=data.content?.map(b=>b.text||'').join('').trim()||'No response received.';
+      conversationHistory.push({role:'assistant',content:reply});
+      thinkDiv.querySelector('.msg-text').innerHTML=reply.split('\n').filter(l=>l.trim()).map(l=>`<p>${l}</p>`).join('');
+    }
   }catch(e){
-    thinkDiv.querySelector('.msg-text').innerHTML='<p>Connection error. Check your network and try again.</p>';
+    thinkDiv.querySelector('.msg-text').innerHTML=`<p>Request failed — check your API key is valid and has credits at console.anthropic.com.</p>`;
   }
   document.getElementById('send-btn').disabled=false;
   document.getElementById('messages').scrollTop=99999;
 }
+
+// INIT
+fetchPrices();
+fetchFearGreed();
+setInterval(fetchPrices,60000);
+setInterval(fetchFearGreed,300000);
 </script>
 </body>
 </html>
